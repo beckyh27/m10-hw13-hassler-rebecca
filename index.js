@@ -43,24 +43,31 @@ async function getWeather(query) {
       // const actualTemp = data.main.temp
       // const feelsLikeTemp = data.main.feels_like
       // const place = `${data.name}, ${data.sys.country}`
-      // create JS date object from Unix timestamp
+      // // create JS date object from Unix timestamp
       // const updatedAt = new Date(data.dt * 1000)
       // this object is used by displayWeatherInfo to update the HTML
+      // return {
+      //   coords: data.coord.lat + ',' + data.coord.lon,
+      //   description: description,
+      //   iconUrl: iconUrl,
+      //   actualTemp: actualTemp,
+      //   feelsLikeTemp: feelsLikeTemp,
+      //   place: place,
+      //   updatedAt: updatedAt
+      // }
+      const {coord: {lat}, coord: {lon}, weather: [ {description} ], weather: [ {icon} ], main: {temp}, main: {feels_like}, name, sys: {country}, dt } = data
       
-      return weatherStuff = {
-        coords: `${data.coord.lat},${data.coord.lon}`,
-        description: data.weather[0].description,
-        iconUrl: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
-        actualTemp: data.main.temp,
-        feelsLikeTemp: data.main.feels_like,
-        place: `${data.name}, ${data.sys.country}`,
-        updatedAt: new Date(data.dt * 1000)
+      return {
+        coords: `${lat},${lon}`,
+        description: description,
+        iconUrl: `https://openweathermap.org/img/wn/${icon}@2x.png`,
+        actualTemp: temp,
+        feelsLikeTemp: feels_like,
+        place: `${name}, ${country}`,
+        updatedAt: new Date(dt * 1000)
       }
     
 }
-
-// const {coords, description, iconUrl, actualTemp, feelsLikeTemp, place, updatedAt} = weatherObj
-// console.log(coords, description, iconUrl, actualTemp, feelsLikeTemp, place, updatedAt)
 
 // show error message when location isn't found
 const displayLocNotFound = () => {
@@ -76,7 +83,9 @@ const displayLocNotFound = () => {
 const displayWeatherInfo = (weatherObj) => {
   // clears any previous weather info
   weatherContainer.innerHTML = ``;
-
+  
+  const {coords: coords1, description: description1, iconUrl: iconUrl1, actualTemp: actualTemp1, feelsLikeTemp: feelsLikeTemp1, place: place1, updatedAt: updatedAt1} = weatherObj
+  
   // inserts a linebreak <br> to weather section tag
   addBreak = () => {
     weatherContainer.appendChild(
@@ -86,24 +95,24 @@ const displayWeatherInfo = (weatherObj) => {
 
   // weather location element
   const placeName = document.createElement('h2')
-  placeName.textContent = weatherObj.place
+  placeName.textContent = place1
   weatherContainer.appendChild(placeName)
 
   // map link element based on lat/long
   const whereLink = document.createElement('a')
   whereLink.textContent = `Click to view map`
-  whereLink.href = `https://www.google.com/maps/search/?api=1&query=${weatherObj.coords}`
+  whereLink.href = `https://www.google.com/maps/search/?api=1&query=${coords1}`
   whereLink.target = `__BLANK`
   weatherContainer.appendChild(whereLink)
 
   // weather icon img
   const icon = document.createElement('img')
-  icon.src = weatherObj.iconUrl
+  icon.src = iconUrl1
   weatherContainer.appendChild(icon)
 
   // weather description
   const description = document.createElement('p')
-  description.textContent = weatherObj.description
+  description.textContent = description1
   description.style.textTransform = 'capitalize'
   weatherContainer.appendChild(description)
 
@@ -111,19 +120,19 @@ const displayWeatherInfo = (weatherObj) => {
 
   // current temperature
   const temp = document.createElement('p')
-  temp.textContent = `Current: ${weatherObj.actualTemp}° F`
+  temp.textContent = `Current: ${actualTemp1}° F`
   weatherContainer.appendChild(temp)
 
   // "feels like" temperature
   const feelsLikeTemp = document.createElement('p')
-  feelsLikeTemp.textContent = `Feels like: ${weatherObj.feelsLikeTemp}° F`
+  feelsLikeTemp.textContent = `Feels like: ${feelsLikeTemp1}° F`
   weatherContainer.appendChild(feelsLikeTemp)
 
   addBreak()
 
   // time weather was last updated
   const updatedAt = document.createElement('p')
-  updatedAt.textContent = `Last updated: ${weatherObj.updatedAt.toLocaleTimeString(
+  updatedAt.textContent = `Last updated: ${updatedAt1.toLocaleTimeString(
       'en-US',
       {
         hour: 'numeric',
