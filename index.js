@@ -22,7 +22,7 @@ formEl.onsubmit = (e) => {
 }
 
 // calls the OpenWeather API and returns an object of weather info
-function getWeather(query) {
+const getWeather = (query) => {
   // default search to USA
   if (!query.includes(",")) query += ',us'
   // return the fetch call which returns a promise
@@ -30,10 +30,8 @@ function getWeather(query) {
   return fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${query}&units=imperial&appid=6efff70fe1477748e31c17d1c504635f`
   )
-    .then(function(res) {
-      return res.json()
-    })
-    .then(function(data) {
+    .then((res) => res.json())
+    .then((data) => {
       // location not found, throw error/reject promise
       if (data.cod === "404") throw new Error('location not found')
       // create weather icon URL
@@ -58,7 +56,7 @@ function getWeather(query) {
 }
 
 // show error message when location isn't found
-function displayLocNotFound() {
+const displayLocNotFound = () => {
   // clears any previous weather info
   weatherContainer.innerHTML = ``;
   // create h2, add error msg, and add to page
@@ -68,12 +66,12 @@ function displayLocNotFound() {
 }
 
 // updates HTML to display weather info
-function displayWeatherInfo(weatherObj) {
+const displayWeatherInfo = (weatherObj) => {
   // clears any previous weather info
   weatherContainer.innerHTML = ``;
 
   // inserts a linebreak <br> to weather section tag
-  function addBreak() {
+  addBreak = () => {
     weatherContainer.appendChild(
       document.createElement('br')
     )
