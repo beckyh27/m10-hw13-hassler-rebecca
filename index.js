@@ -21,10 +21,8 @@ formEl.onsubmit = (e) => {
   inputEl.value = ``
 }
 
-
-
 // calls the OpenWeather API and returns an object of weather info
-async function getWeather(query) {
+const getWeather = async (query) => {
   // default search to USA
   if (!query.includes(",")) query += ',us'
   // return the fetch call which returns a promise
@@ -32,41 +30,29 @@ async function getWeather(query) {
   const res = await fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${query}&units=imperial&appid=6efff70fe1477748e31c17d1c504635f`
   )
-    // .then((res) => res.json())
-    const data = await res.json()
-    // .then((data) => {
-      // location not found, throw error/reject promise
-      if (data.cod === "404") throw new Error('location not found')
-      // create weather icon URL
-      // const iconUrl = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
-      // const description = data.weather[0].description
-      // const actualTemp = data.main.temp
-      // const feelsLikeTemp = data.main.feels_like
-      // const place = `${data.name}, ${data.sys.country}`
-      // // create JS date object from Unix timestamp
-      // const updatedAt = new Date(data.dt * 1000)
-      // this object is used by displayWeatherInfo to update the HTML
-      // return {
-      //   coords: data.coord.lat + ',' + data.coord.lon,
-      //   description: description,
-      //   iconUrl: iconUrl,
-      //   actualTemp: actualTemp,
-      //   feelsLikeTemp: feelsLikeTemp,
-      //   place: place,
-      //   updatedAt: updatedAt
-      // }
-      const {coord: {lat}, coord: {lon}, weather: [ {description} ], weather: [ {icon} ], main: {temp}, main: {feels_like}, name, sys: {country}, dt } = data
-      
-      return {
-        coords: `${lat},${lon}`,
-        description: description,
-        iconUrl: `https://openweathermap.org/img/wn/${icon}@2x.png`,
-        actualTemp: temp,
-        feelsLikeTemp: feels_like,
-        place: `${name}, ${country}`,
-        updatedAt: new Date(dt * 1000)
-      }
-    
+
+  const data = await res.json()
+  const {coord: {lat}, coord: {lon}, weather: [ {description} ], weather: [ {icon} ], main: {temp}, main: {feels_like}, name, sys: {country}, dt, cod } = data
+  
+  // location not found, throw error/reject promise
+  if (cod === "404") throw new Error('location not found')
+  
+  // create weather icon URL
+  const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`
+
+  const place = `${name}, ${country}`
+  // create JS date object from Unix timestamp
+  const updatedAt = new Date(dt * 1000)
+  // this object is used by displayWeatherInfo to update the HTML
+  return {
+    coords: `${lat},${lon}`,
+    description: description,
+    iconUrl: iconUrl,
+    actualTemp: temp,
+    feelsLikeTemp: feels_like,
+    place: place,
+    updatedAt: updatedAt
+  }   
 }
 
 // show error message when location isn't found
@@ -85,7 +71,7 @@ const displayWeatherInfo = (weatherObj) => {
   weatherContainer.innerHTML = ``;
   
   const {coords: coords1, description: description1, iconUrl: iconUrl1, actualTemp: actualTemp1, feelsLikeTemp: feelsLikeTemp1, place: place1, updatedAt: updatedAt1} = weatherObj
-  
+
   // inserts a linebreak <br> to weather section tag
   addBreak = () => {
     weatherContainer.appendChild(
