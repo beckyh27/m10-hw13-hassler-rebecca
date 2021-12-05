@@ -21,39 +21,46 @@ formEl.onsubmit = (e) => {
   inputEl.value = ``
 }
 
+
+
 // calls the OpenWeather API and returns an object of weather info
-const getWeather = (query) => {
+async function getWeather(query) {
   // default search to USA
   if (!query.includes(",")) query += ',us'
   // return the fetch call which returns a promise
   // allows us to call .then on this function
-  return fetch(
+  const res = await fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${query}&units=imperial&appid=6efff70fe1477748e31c17d1c504635f`
   )
-    .then((res) => res.json())
-    .then((data) => {
+    // .then((res) => res.json())
+    const data = await res.json()
+    // .then((data) => {
       // location not found, throw error/reject promise
       if (data.cod === "404") throw new Error('location not found')
       // create weather icon URL
-      const iconUrl = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
-      const description = data.weather[0].description
-      const actualTemp = data.main.temp
-      const feelsLikeTemp = data.main.feels_like
-      const place = `${data.name}, ${data.sys.country}`
+      // const iconUrl = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+      // const description = data.weather[0].description
+      // const actualTemp = data.main.temp
+      // const feelsLikeTemp = data.main.feels_like
+      // const place = `${data.name}, ${data.sys.country}`
       // create JS date object from Unix timestamp
-      const updatedAt = new Date(data.dt * 1000)
+      // const updatedAt = new Date(data.dt * 1000)
       // this object is used by displayWeatherInfo to update the HTML
-      return {
+      
+      return weatherStuff = {
         coords: `${data.coord.lat},${data.coord.lon}`,
-        description: description,
-        iconUrl: iconUrl,
-        actualTemp: actualTemp,
-        feelsLikeTemp: feelsLikeTemp,
-        place: place,
-        updatedAt: updatedAt
+        description: data.weather[0].description,
+        iconUrl: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
+        actualTemp: data.main.temp,
+        feelsLikeTemp: data.main.feels_like,
+        place: `${data.name}, ${data.sys.country}`,
+        updatedAt: new Date(data.dt * 1000)
       }
-    })
+    
 }
+
+// const {coords, description, iconUrl, actualTemp, feelsLikeTemp, place, updatedAt} = weatherObj
+// console.log(coords, description, iconUrl, actualTemp, feelsLikeTemp, place, updatedAt)
 
 // show error message when location isn't found
 const displayLocNotFound = () => {
